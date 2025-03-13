@@ -5,9 +5,9 @@ const Slot = require('../models/Slot');
 // @access  Private/Admin
 exports.createSlot = async (req, res) => {
   try {
-    const { startTime, endTime, stylistId } = req.body;
+    const { start_time, end_time, stylistId } = req.body;
     
-    if (new Date(startTime) >= new Date(endTime)) {
+    if (new Date(start_time) >= new Date(end_time)) {
       return res.status(400).json({
         success: false,
         message: 'Thời gian bắt đầu phải nhỏ hơn thời gian kết thúc'
@@ -18,8 +18,8 @@ exports.createSlot = async (req, res) => {
       stylistId,
       $or: [
         {
-          startTime: { $lt: endTime },
-          endTime: { $gt: startTime }
+          start_time: { $lt: end_time },
+          end_time: { $gt: start_time }
         }
       ]
     });
@@ -32,8 +32,8 @@ exports.createSlot = async (req, res) => {
     }
 
     const slot = await Slot.create({
-      startTime,
-      endTime, 
+      start_time,
+      end_time, 
       stylistId
     });
 
@@ -56,7 +56,7 @@ exports.getSlots = async (req, res) => {
   try {
     const slots = await Slot.find()
       .populate('stylistId', 'name email')
-      .sort({ startTime: 1 });
+      .sort({ start_time: 1 });
 
     res.status(200).json({
       success: true,
@@ -102,10 +102,11 @@ exports.getSlotById = async (req, res) => {
 // @access  Private/Admin
 exports.updateSlot = async (req, res) => {
   try {
-    const { startTime, endTime, isAvailable } = req.body;
+    const { start_time, end_time, available, stylistId } = req.body;
     
-    if (startTime && endTime) {
-      if (new Date(startTime) >= new Date(endTime)) {
+    // Kiểm tra thời gian hợp lệ
+    if (start_time && end_time) {
+      if (new Date(start_time) >= new Date(end_time)) {
         return res.status(400).json({
           success: false,
           message: 'Thời gian bắt đầu phải nhỏ hơn thời gian kết thúc'
@@ -113,11 +114,21 @@ exports.updateSlot = async (req, res) => {
       }
     }
 
-        const slot = await Slot.findByIdAndUpdate(
-            req.params.id,
-            { startTime, endTime, isAvailable },
-            { new: true }
-        ).populate('stylistId', 'name email');
+    // Tạo object chứa các trường cần update
+    const updateFields = {};
+    if (start_time) updateFields.start_time = start_time;
+    if (end_time) updateFields.end_time = end_time;
+    if (typeof available !== 'undefined') updateFields.available = available;
+    if (stylistId) updateFields.stylistId = stylistId;
+
+    const slot = await Slot.findByIdAndUpdate(
+      req.params.id,
+      updateFields,
+      { 
+        new: true,
+        runValidators: true 
+      }
+    ).populate('stylistId', 'name email');
 
     if (!slot) {
       return res.status(404).json({
