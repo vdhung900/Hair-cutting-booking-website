@@ -6,22 +6,14 @@ const appointmentSchema = new mongoose.Schema({
     ref: 'User',
     required: true,
   },
-  stylistId: {
-    type: mongoose.Schema.Types.ObjectId,
-    ref: 'Stylist',
-    required: true,
-  },
   serviceId: {
     type: mongoose.Schema.Types.ObjectId,
     ref: 'Service',
     required: true,
   },
-  date: {
-    type: Date,
-    required: true,
-  },
-  time: {
-    type: String,
+  slotId: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'Slot',
     required: true,
   },
   service_name: {
@@ -29,10 +21,6 @@ const appointmentSchema = new mongoose.Schema({
     required: true,
   },
   service_des: {
-    type: String,
-    required: true
-  },
-  stylist_name: {
     type: String,
     required: true
   },
