@@ -14,11 +14,21 @@ const userSchema = new mongoose.Schema({
     unique: true,
     match: [/^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/, 'Email không hợp lệ']
   },
+  phone: {
+    type: String,
+    required: true,
+    unique: true,
+    match: [/^\d{10}$/, 'Số điện thoại không hợp lệ']
+  },
   password: {
     type: String,
     required: true,
     minlength: 6,
     select: false
+  },
+  avatar: {
+    type: String,
+    default: 'default_avatar.jpg'
   },
   role: {
     type: String,
