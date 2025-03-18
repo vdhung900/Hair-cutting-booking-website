@@ -5,9 +5,13 @@ const {
   createSlot,
   getSlots,
   getSlotById,
-  updateSlot, 
-  deleteSlot
+  updateSlot,
+  deleteSlot,
+  getAvailableSlots
 } = require('../controllers/slotController');
+
+// Route để lấy danh sách slot trống (đặt lên đầu)
+router.get('/available', getAvailableSlots);
 
 // Thêm khung giờ mới
 router.post('/', protect, authorize, createSlot);
@@ -23,6 +27,5 @@ router.put('/:id', protect, authorize, updateSlot);
 
 // Xóa khung giờ
 router.delete('/:id', protect, authorize, deleteSlot);
-
 
 module.exports = router; 

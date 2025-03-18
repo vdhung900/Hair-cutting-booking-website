@@ -2,6 +2,7 @@ const express = require('express');
 const mongoose = require('mongoose');
 const cors = require('cors');
 const dotenv = require('dotenv');
+const path = require('path');
 
 // Load env vars
 dotenv.config();
@@ -21,6 +22,16 @@ app.use(express.json());
 
 // Enable CORS
 app.use(cors());
+
+// Serve static files
+app.use('/public', express.static(path.join(__dirname, 'public')));
+app.use('/uploads', express.static(path.join(__dirname, 'public/uploads')));
+
+// Log all requests to static files
+app.use((req, res, next) => {
+  console.log('Request URL:', req.url);
+  next();
+});
 
 // Mount routers
 app.use('/api/auth', auth);

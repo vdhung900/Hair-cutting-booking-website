@@ -6,10 +6,18 @@ const serviceSchema = new mongoose.Schema({
     required: true,
     trim: true
   },
-  service_image: {
-    type: String,
-    required: true,
-  },
+  service_images: [
+    {
+      image_url: {
+        type: String,
+        required: true
+      },
+      image_title: {
+        type: String,
+        required: true
+      }
+    }
+  ],
   service_price: {
     type: Number,
     required: true,

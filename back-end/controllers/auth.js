@@ -5,12 +5,13 @@ const User = require('../models/User');
 // @access  Public
 exports.register = async (req, res) => {
   try {
-    const { name, email, password } = req.body;
+    const { name, email, password, phone } = req.body;
 
     const user = await User.create({
       name,
       email,
-      password
+      password,
+      phone
     });
 
     const token = user.getSignedJwtToken();
@@ -63,7 +64,14 @@ exports.login = async (req, res) => {
 
     res.status(200).json({
       success: true,
-      token
+      token,
+      user: {
+        _id: user._id,
+        name: user.name,
+        email: user.email,
+        phone: user.phone,
+        role: user.role
+      }
     });
   } catch (err) {
     res.status(400).json({

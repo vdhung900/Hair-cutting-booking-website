@@ -16,6 +16,11 @@ const stylistSchema = new mongoose.Schema({
     type: Number,
     required: true,
   },
+  experience: {
+    type: Number,
+    required: true,
+    default: 0
+  },
   image: {
     type: String,
     default: 'default-avatar.jpg'

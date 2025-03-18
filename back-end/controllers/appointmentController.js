@@ -1,27 +1,14 @@
 const Appointment = require('../models/Appointment');
 const Service = require('../models/Service');
 const Slot = require('../models/Slot');
+const Stylist = require('../models/Stylist');
 
 // @desc    Tạo lịch hẹn mới
 // @route   POST /api/appointments
 // @access  Private
 exports.createAppointment = async (req, res) => {
   try {
-    const { slotId, serviceId, notes } = req.body;
-
-    // Kiểm tra xem slot có tồn tại và còn trống không
-    const slot = await Slot.findById(slotId);
-    if (!slot) {
-      return res.status(404).json({
-        message: 'Không tìm thấy khung giờ này'
-      });
-    }
-    
-    if (!slot.available) {
-      return res.status(400).json({
-        message: 'Khung giờ này đã được đặt'
-      });
-    }
+    const { serviceId, stylistId, selectedTime, notes } = req.body;
 
     // Kiểm tra service
     const service = await Service.findById(serviceId);
@@ -32,20 +19,52 @@ exports.createAppointment = async (req, res) => {
       });
     }
 
+    // Kiểm tra stylist
+    const stylist = await Stylist.findById(stylistId);
+    if (!stylist) {
+      return res.status(404).json({
+        success: false,
+        message: 'Không tìm thấy stylist'
+      });
+    }
+
+    // Tạo thời gian bắt đầu và kết thúc cho slot
+    const startTime = new Date(selectedTime);
+    const endTime = new Date(startTime.getTime() + 60 * 60 * 1000); // Thêm 1 giờ
+
+    // Kiểm tra xem slot đã tồn tại chưa
+    const existingSlot = await Slot.findOne({
+      start_time: startTime,
+      end_time: endTime,
+      stylistId: stylistId,
+      available: true
+    });
+
+    if (existingSlot) {
+      return res.status(400).json({
+        success: false,
+        message: 'Khung giờ này đã được đặt'
+      });
+    }
+
+    // Tạo slot mới
+    const slot = new Slot({
+      start_time: startTime,
+      end_time: endTime,
+      stylistId: stylistId,
+      available: false
+    });
+    await slot.save();
+
     // Tạo lịch hẹn mới
     const appointment = new Appointment({
       userId: req.user.id,
-      slotId,
+      slotId: slot._id,
       serviceId,
-      slotId,
       notes,
       service_name: service.service_name,
       service_des: service.service_description,
     });
-
-    // Cập nhật trạng thái slot
-    slot.available = false;
-    await slot.save();
 
     // Lưu lịch hẹn
     await appointment.save();
@@ -55,10 +74,25 @@ exports.createAppointment = async (req, res) => {
       .populate('userId', 'name email')
       .populate('serviceId', 'service_name service_price')
       .populate('slotId', 'start_time end_time stylistId')
+      .populate({
+        path: 'slotId',
+        populate: {
+          path: 'stylistId',
+          select: 'name experience'
+        }
+      });
 
-    res.status(201).json(populatedAppointment);
+    res.status(201).json({
+      success: true,
+      data: populatedAppointment
+    });
   } catch (error) {
-    res.status(500).json({ error: error.message });
+    console.error('Lỗi khi tạo lịch hẹn:', error);
+    res.status(500).json({ 
+      success: false,
+      message: 'Đã xảy ra lỗi khi tạo lịch hẹn',
+      error: error.message 
+    });
   }
 };
 
@@ -87,12 +121,8 @@ exports.cancelAppointment = async (req, res) => {
     appointment.status = 'cancelled';
     await appointment.save();
 
-    // Cập nhật trạng thái slot
-    const slot = await Slot.findById(appointment.slotId);
-    if (slot) {
-      slot.available = true;
-      await slot.save();
-    }
+    // Xóa slot
+    await Slot.findByIdAndDelete(appointment.slotId);
 
     res.status(200).json({
       success: true,
@@ -119,7 +149,13 @@ exports.getAppointments = async (req, res) => {
     const appointments = await Appointment.find(query)
       .populate('userId', 'name email')
       .populate('serviceId', 'service_name service_price')
-      .populate('slotId', 'start_time end_time stylistId')
+      .populate({
+        path: 'slotId',
+        populate: {
+          path: 'stylistId',
+          select: 'name experience'
+        }
+      })
       .sort({ createdAt: -1 });
 
     res.json(appointments);
@@ -159,26 +195,14 @@ exports.adminUpdateAppointment = async (req, res) => {
 
     // Nếu có cập nhật slot mới
     if (slotId && slotId !== appointment.slotId.toString()) {
-      // Kiểm tra slot mới có tồn tại không
-      const newSlot = await Slot.findById(slotId);
-      if (!newSlot) {
-        return res.status(404).json({ message: 'Không tìm thấy khung giờ này' });
-      }
+      // Xóa slot cũ
+      await Slot.findByIdAndDelete(appointment.slotId);
 
-      // Kiểm tra slot mới có trống không
-      if (!newSlot.available) {
-        return res.status(400).json({ message: 'Khung giờ này đã được đặt' });
-      }
-
-      // Cập nhật trạng thái slot cũ thành trống
-      const oldSlot = await Slot.findById(appointment.slotId);
-      if (oldSlot) {
-        oldSlot.available = true;
-        await oldSlot.save();
-      }
-
-      // Cập nhật trạng thái slot mới thành đã đặt
-      newSlot.available = false;
+      // Tạo slot mới
+      const newSlot = new Slot({
+        _id: slotId,
+        available: false
+      });
       await newSlot.save();
 
       appointment.slotId = slotId;
@@ -198,11 +222,7 @@ exports.adminUpdateAppointment = async (req, res) => {
 
     // Cập nhật trạng thái slot nếu hủy lịch hẹn
     if (status === 'cancelled' && appointment.status !== 'cancelled') {
-      const slot = await Slot.findById(appointment.slotId);
-      if (slot) {
-        slot.available = true;
-        await slot.save();
-      }
+      await Slot.findByIdAndDelete(appointment.slotId);
     }
 
     // Cập nhật các thông tin khác
@@ -233,12 +253,8 @@ exports.adminDeleteAppointment = async (req, res) => {
       return res.status(404).json({ message: 'Không tìm thấy lịch hẹn' });
     }
 
-    // Kiểm tra và cập nhật trạng thái slot thành available
-    const slot = await Slot.findById(appointment.slotId);
-    if (slot) {
-      slot.available = true;
-      await slot.save();
-    }
+    // Xóa slot
+    await Slot.findByIdAndDelete(appointment.slotId);
 
     // Xóa lịch hẹn khỏi database
     await Appointment.findByIdAndDelete(appointment._id);
