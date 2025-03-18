@@ -1,4 +1,4 @@
-export const BACKEND_URL = 'http://192.168.110.43:9999';
+export const BACKEND_URL = 'http://10.33.66.97:9999';
 
 export const THEME_COLORS = {
   primary: '#2196F3',

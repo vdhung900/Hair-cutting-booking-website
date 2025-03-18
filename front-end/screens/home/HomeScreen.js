@@ -18,7 +18,7 @@ import axios from 'axios';
 
 export default function HomeScreen() {
   const navigation = useNavigation();
-  const [userName, setUserName] = useState('VÕ ĐÌNH HƯNG');
+  const [userName, setUserName] = useState('');
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [services, setServices] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -30,8 +30,23 @@ export default function HomeScreen() {
   }, []);
 
   const checkLoginStatus = async () => {
-    const token = await AsyncStorage.getItem('userToken');
-    setIsLoggedIn(!!token);
+    try {
+      const token = await AsyncStorage.getItem('userToken');
+      const userStr = await AsyncStorage.getItem('user');
+      
+      if (token && userStr) {
+        const user = JSON.parse(userStr);
+        setIsLoggedIn(true);
+        setUserName(user.name || '');
+      } else {
+        setIsLoggedIn(false);
+        setUserName('');
+      }
+    } catch (error) {
+      console.error('Lỗi khi lấy thông tin user:', error);
+      setIsLoggedIn(false);
+      setUserName('');
+    }
   };
 
   const fetchServices = async () => {
@@ -63,9 +78,9 @@ export default function HomeScreen() {
     >
       <Image 
         source={{ 
-          uri: service.service_image.startsWith('http') 
-            ? service.service_image 
-            : `${BACKEND_URL}/public/images/services/${service.service_image}`,
+          uri: service.service_images[0].image_url.startsWith('http') 
+            ? service.service_images[0].image_url 
+            : `${BACKEND_URL}/public/images/services/${service.service_images[0].image_url}`,
           cache: 'force-cache'
         }}
         style={styles.serviceImage}
