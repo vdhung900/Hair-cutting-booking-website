@@ -64,10 +64,10 @@ export default function HomeScreen() {
   };
 
   const menuItems = [
-    { id: 1, icon: 'gift', title: 'Ưu đãi' },
-    { id: 2, icon: 'star', title: 'Shine Member' },
-    { id: 3, icon: 'shield-alt', title: 'Cam kết' },
-    { id: 4, icon: 'location-arrow', title: 'Địa chỉ Salon' },
+    { id: 1, icon: 'gift', title: 'Ưu đãi', route: 'Promotion' },
+    { id: 2, icon: 'cut', title: 'Stylist', route: 'Stylist' },
+    { id: 3, icon: 'shield-alt', title: 'Cam kết', route: 'Commitment' },
+    { id: 4, icon: 'location-arrow', title: 'Địa chỉ Salon', route: 'SalonLocations' },
   ];
 
   const renderServiceItem = (service) => (
