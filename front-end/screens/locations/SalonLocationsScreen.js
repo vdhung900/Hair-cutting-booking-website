@@ -40,17 +40,6 @@ export default function SalonLocationsScreen({ navigation }) {
   return (
     <SafeAreaView style={styles.container}>
       <StatusBar barStyle="dark-content" backgroundColor={THEME_COLORS.white} />
-      
-      {/* Header */}
-      <View style={styles.header}>
-        <TouchableOpacity 
-          style={styles.backButton}
-          onPress={() => navigation.goBack()}
-        >
-          <FontAwesome5 name="chevron-left" size={20} color={THEME_COLORS.dark} />
-        </TouchableOpacity>
-        <Text style={styles.headerTitle}>Địa chỉ Salon</Text>
-      </View>
 
       {/* Static Map Image */}
       <View style={styles.mapContainer}>
@@ -99,23 +88,6 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: THEME_COLORS.white,
-  },
-  header: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    padding: 15,
-    borderBottomWidth: 1,
-    borderBottomColor: '#EEEEEE',
-  },
-  backButton: {
-    padding: 5,
-  },
-  headerTitle: {
-    flex: 1,
-    fontSize: 18,
-    fontWeight: 'bold',
-    textAlign: 'center',
-    marginRight: 30,
   },
   mapContainer: {
     height: 300,
