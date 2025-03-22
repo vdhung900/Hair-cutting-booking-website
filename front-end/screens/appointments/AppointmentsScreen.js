@@ -87,7 +87,7 @@ export default function AppointmentsScreen({ navigation }) {
       case 'confirmed':
         return THEME_COLORS.success;
       case 'cancelled':
-        return THEME_COLORS.error;
+        return THEME_COLORS.danger;
       case 'completed':
         return THEME_COLORS.primary;
       default:
@@ -277,6 +277,7 @@ const styles = StyleSheet.create({
   },
   listContainer: {
     padding: 15,
+    paddingBottom: 45,
   },
   emptyContainer: {
     flex: 1,
