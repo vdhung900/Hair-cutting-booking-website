@@ -273,4 +273,177 @@ exports.adminDeleteAppointment = async (req, res) => {
       error: error.message 
     });
   }
+};
+
+// @desc    Lấy thống kê thu nhập hàng tháng
+// @route   GET /api/appointments/stats/monthly-income
+// @access  Private (Admin only)
+exports.getMonthlyIncome = async (req, res) => {
+  try {
+    // Lấy tháng và năm từ query params hoặc sử dụng tháng và năm hiện tại
+    const month = parseInt(req.query.month) || new Date().getMonth() + 1;
+    const year = parseInt(req.query.year) || new Date().getFullYear();
+
+    // Tạo ngày bắt đầu và kết thúc của tháng
+    const startDate = new Date(year, month - 1, 1);
+    const endDate = new Date(year, month, 0);
+
+    // Lấy tất cả lịch hẹn trong tháng
+    const appointments = await Appointment.find({
+      createdAt: {
+        $gte: startDate,
+        $lte: endDate
+      }
+    }).populate('serviceId', 'service_price');
+
+    // Tính toán các thống kê
+    const totalAppointments = appointments.length;
+    const completedAppointments = appointments.filter(apt => apt.status === 'completed').length;
+    const cancelledAppointments = appointments.filter(apt => apt.status === 'cancelled').length;
+    const pendingAppointments = appointments.filter(apt => apt.status === 'pending').length;
+    
+    // Tính tổng thu nhập từ các lịch hẹn hoàn thành
+    const totalIncome = appointments
+      .filter(apt => apt.status === 'completed')
+      .reduce((sum, apt) => sum + (apt.serviceId?.service_price || 0), 0);
+
+    res.status(200).json({
+      success: true,
+      data: {
+        month,
+        year,
+        totalIncome,
+        totalAppointments,
+        completedAppointments,
+        cancelledAppointments,
+        pendingAppointments
+      }
+    });
+  } catch (error) {
+    console.error('Lỗi khi lấy thống kê thu nhập:', error);
+    res.status(500).json({
+      success: false,
+      message: 'Đã xảy ra lỗi khi lấy thống kê thu nhập',
+      error: error.message
+    });
+  }
+};
+
+// @desc    Lấy dữ liệu thu nhập theo tháng
+// @route   GET /api/appointments/stats/monthly-data
+// @access  Private (Admin only)
+exports.getMonthlyData = async (req, res) => {
+  try {
+    // Lấy tháng và năm từ query params hoặc sử dụng tháng và năm hiện tại
+    const month = parseInt(req.query.month) || new Date().getMonth() + 1;
+    const year = parseInt(req.query.year) || new Date().getFullYear();
+
+    // Tạo ngày bắt đầu và kết thúc của tháng
+    const startDate = new Date(year, month - 1, 1);
+    const endDate = new Date(year, month, 0);
+
+    // Lấy tất cả lịch hẹn trong tháng
+    const appointments = await Appointment.find({
+      createdAt: {
+        $gte: startDate,
+        $lte: endDate
+      }
+    }).populate('serviceId', 'service_price');
+
+    // Tính tổng thu nhập cho mỗi ngày trong tháng
+    const dailyData = [];
+    const daysInMonth = endDate.getDate();
+
+    for (let day = 1; day <= daysInMonth; day++) {
+      const dayStart = new Date(year, month - 1, day);
+      const dayEnd = new Date(year, month - 1, day, 23, 59, 59);
+
+      const dayAppointments = appointments.filter(apt => {
+        const aptDate = new Date(apt.createdAt);
+        return aptDate >= dayStart && aptDate <= dayEnd;
+      });
+
+      const dayIncome = dayAppointments
+        .filter(apt => apt.status === 'completed')
+        .reduce((sum, apt) => sum + (apt.serviceId?.service_price || 0), 0);
+
+      dailyData.push({
+        day,
+        totalIncome: dayIncome
+      });
+    }
+
+    res.status(200).json({
+      success: true,
+      data: dailyData
+    });
+  } catch (error) {
+    console.error('Lỗi khi lấy dữ liệu theo tháng:', error);
+    res.status(500).json({
+      success: false,
+      message: 'Đã xảy ra lỗi khi lấy dữ liệu theo tháng',
+      error: error.message
+    });
+  }
+};
+
+// @desc    Xác nhận lịch hẹn (Admin only)
+// @route   PUT /api/appointments/:id/confirm
+// @access  Private (Admin only)
+exports.confirmAppointment = async (req, res) => {
+  try {
+    // Kiểm tra quyền admin
+    if (req.user.role !== 'admin') {
+      return res.status(403).json({
+        success: false,
+        message: 'Chỉ admin mới có quyền xác nhận lịch hẹn'
+      });
+    }
+
+    const appointment = await Appointment.findById(req.params.id);
+
+    if (!appointment) {
+      return res.status(404).json({
+        success: false,
+        message: 'Không tìm thấy lịch hẹn'
+      });
+    }
+
+    // Kiểm tra trạng thái lịch hẹn
+    if (appointment.status !== 'pending') {
+      return res.status(400).json({
+        success: false,
+        message: 'Chỉ có thể xác nhận lịch hẹn đang ở trạng thái chờ xác nhận'
+      });
+    }
+
+    // Cập nhật trạng thái lịch hẹn
+    appointment.status = 'confirmed';
+    await appointment.save();
+
+    // Populate thông tin chi tiết
+    const updatedAppointment = await Appointment.findById(appointment._id)
+      .populate('userId', 'name email')
+      .populate('serviceId', 'service_name service_price')
+      .populate('slotId', 'start_time end_time stylistId')
+      .populate({
+        path: 'slotId',
+        populate: {
+          path: 'stylistId',
+          select: 'name experience'
+        }
+      });
+
+    res.status(200).json({
+      success: true,
+      data: updatedAppointment
+    });
+  } catch (error) {
+    console.error('Lỗi khi xác nhận lịch hẹn:', error);
+    res.status(500).json({
+      success: false,
+      message: 'Đã xảy ra lỗi khi xác nhận lịch hẹn',
+      error: error.message
+    });
+  }
 }; 
