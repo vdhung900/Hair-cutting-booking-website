@@ -46,8 +46,11 @@ export default function LoginScreen({ navigation }) {
       console.log('Phản hồi từ server:', response.data);
 
       if (response.data.token) {
+        console.log('Login response:', response.data);
         await AsyncStorage.setItem('userToken', response.data.token);
         await AsyncStorage.setItem('user', JSON.stringify(response.data.user));
+        await AsyncStorage.setItem('userRole', response.data.user.role);
+        console.log('Saved user role:', response.data.user.role);
         
         // Chuyển hướng đến Main tab navigator
         navigation.reset({
