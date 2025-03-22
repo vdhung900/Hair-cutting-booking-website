@@ -140,7 +140,7 @@ export default function ProfileScreen({ navigation }) {
           
           <TouchableOpacity 
             style={styles.menuItem}
-            onPress={() => navigation.navigate('Appointments')}
+            onPress={() => navigation.navigate('History')}
           >
             <FontAwesome5 name="calendar-alt" size={20} color={THEME_COLORS.primary} />
             <Text style={styles.menuText}>Lịch sử đặt lịch</Text>
@@ -156,6 +156,17 @@ export default function ProfileScreen({ navigation }) {
             <Text style={styles.menuText}>Thông báo</Text>
             <FontAwesome5 name="chevron-right" size={16} color={THEME_COLORS.gray} />
           </TouchableOpacity>
+
+          {user?.role === 'admin' && (
+            <TouchableOpacity 
+              style={styles.menuItem}
+              onPress={() => navigation.navigate('MonthlyIncome')}
+            >
+              <FontAwesome5 name="chart-line" size={20} color={THEME_COLORS.primary} />
+              <Text style={styles.menuText}>Thống kê thu nhập</Text>
+              <FontAwesome5 name="chevron-right" size={16} color={THEME_COLORS.gray} />
+            </TouchableOpacity>
+          )}
 
           <TouchableOpacity 
             style={styles.logoutButton}
