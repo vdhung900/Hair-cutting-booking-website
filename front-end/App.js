@@ -7,6 +7,7 @@ import { View, Text, StyleSheet, TouchableOpacity, Dimensions } from 'react-nati
 import { THEME_COLORS } from './constants/Config';
 import 'react-native-gesture-handler';
 import Toast from 'react-native-toast-message';
+import GeminiChat from './components/GeminiChat';
 
 // Import các màn hình
 import LoginScreen from './screens/auth/LoginScreen';
@@ -56,95 +57,98 @@ function CustomTabBarButton({ children, onPress }) {
 
 function MainTabs() {
   return (
-    <Tab.Navigator
-      screenOptions={{
-        tabBarShowLabel: true,
-        tabBarStyle: {
-          position: 'absolute',
-          bottom: 5,
-          left: 10,
-          right: 10,
-          backgroundColor: THEME_COLORS.white,
-          borderRadius: 15,
-          height: 60,
-          paddingBottom: 5,
-          paddingHorizontal: 5,
-          ...styles.shadow
-        },
-        tabBarActiveTintColor: THEME_COLORS.primary,
-        tabBarInactiveTintColor: THEME_COLORS.gray,
-        headerShown: false,
-        tabBarLabelStyle: {
-          fontSize: 12,
-          marginTop: 0,
-        }
-      }}
-    >
-      <Tab.Screen
-        name="Home"
-        component={HomeScreen}
-        options={{
-          tabBarLabel: 'Home',
-          tabBarIcon: ({ color }) => (
-            <FontAwesome5 name="home" size={20} color={color} />
-          ),
-        }}
-      />
-      <Tab.Screen
-        name="Services"
-        component={ServicesScreen}
-        options={{
-          tabBarLabel: 'Dịch vụ',
-          tabBarIcon: ({ color }) => (
-            <FontAwesome5 name="cut" size={18} color={color} />
-          ),
-        }}
-      />
-      <Tab.Screen
-        name="Booking"
-        component={BookingScreen}
-        options={{
-          tabBarLabel: '',
-          tabBarLabelStyle: {
-            color: THEME_COLORS.primary,
-            fontSize: 12,
-            marginTop: 8,
+    <View style={{ flex: 1 }}>
+      <Tab.Navigator
+        screenOptions={{
+          tabBarShowLabel: true,
+          tabBarStyle: {
+            position: 'absolute',
+            bottom: 5,
+            left: 10,
+            right: 10,
+            backgroundColor: THEME_COLORS.white,
+            borderRadius: 15,
+            height: 60,
+            paddingBottom: 5,
+            paddingHorizontal: 5,
+            ...styles.shadow
           },
-          tabBarIcon: ({ focused }) => (
-            <FontAwesome5 name="calendar" size={22} color={THEME_COLORS.white} />
-          ),
-          tabBarButton: (props) => (
-            <CustomTabBarButton {...props} />
-          )
+          tabBarActiveTintColor: THEME_COLORS.primary,
+          tabBarInactiveTintColor: THEME_COLORS.gray,
+          headerShown: false,
+          tabBarLabelStyle: {
+            fontSize: 12,
+            marginTop: 0,
+          }
         }}
-      />
-      <Tab.Screen
-        name="History"
-        component={AppointmentsScreen}
-        options={{
-          tabBarLabel: 'Lịch sử cắt',
-          tabBarIcon: ({ color }) => (
-            <FontAwesome5 name="clock" size={20} color={color} />
-          ),
-        }}
-      />
-      <Tab.Screen
-        name="Profile"
-        component={ProfileScreen}
-        options={{
-          tabBarLabel: 'Tài khoản',
-          tabBarIcon: ({ color }) => (
-            <FontAwesome5 name="user-circle" size={20} color={color} />
-          ),
-        }}
-      />
-    </Tab.Navigator>
+      >
+        <Tab.Screen
+          name="Home"
+          component={HomeScreen}
+          options={{
+            tabBarLabel: 'Home',
+            tabBarIcon: ({ color }) => (
+              <FontAwesome5 name="home" size={20} color={color} />
+            ),
+          }}
+        />
+        <Tab.Screen
+          name="Services"
+          component={ServicesScreen}
+          options={{
+            tabBarLabel: 'Dịch vụ',
+            tabBarIcon: ({ color }) => (
+              <FontAwesome5 name="cut" size={18} color={color} />
+            ),
+          }}
+        />
+        <Tab.Screen
+          name="Booking"
+          component={BookingScreen}
+          options={{
+            tabBarLabel: '',
+            tabBarLabelStyle: {
+              color: THEME_COLORS.primary,
+              fontSize: 12,
+              marginTop: 8,
+            },
+            tabBarIcon: ({ focused }) => (
+              <FontAwesome5 name="calendar" size={22} color={THEME_COLORS.white} />
+            ),
+            tabBarButton: (props) => (
+              <CustomTabBarButton {...props} />
+            )
+          }}
+        />
+        <Tab.Screen
+          name="History"
+          component={AppointmentsScreen}
+          options={{
+            tabBarLabel: 'Lịch sử cắt',
+            tabBarIcon: ({ color }) => (
+              <FontAwesome5 name="clock" size={20} color={color} />
+            ),
+          }}
+        />
+        <Tab.Screen
+          name="Profile"
+          component={ProfileScreen}
+          options={{
+            tabBarLabel: 'Tài khoản',
+            tabBarIcon: ({ color }) => (
+              <FontAwesome5 name="user-circle" size={20} color={color} />
+            ),
+          }}
+        />
+      </Tab.Navigator>
+      <GeminiChat />
+    </View>
   );
 }
 
 export default function App() {
   return (
-    <>
+    <View style={{ flex: 1 }}>
       <NavigationContainer>
         <Stack.Navigator
           screenOptions={{
@@ -223,7 +227,7 @@ export default function App() {
         </Stack.Navigator>
       </NavigationContainer>
       <Toast />
-    </>
+    </View>
   );
 }
 

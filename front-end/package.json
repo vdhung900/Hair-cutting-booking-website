@@ -16,7 +16,8 @@
   },
   "dependencies": {
     "@expo/vector-icons": "^14.0.4",
-    "@react-native-async-storage/async-storage": "^2.1.2",
+    "@google/generative-ai": "^0.24.0",
+    "@react-native-async-storage/async-storage": "1.23.1",
     "@react-native-community/datetimepicker": "^8.3.0",
     "@react-navigation/bottom-tabs": "^7.2.1",
     "@react-navigation/drawer": "^7.1.2",
