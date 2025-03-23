@@ -27,6 +27,10 @@ export default function CommitmentScreen({ navigation }) {
       title: '7 ngày bảo hành Uốn/Nhuộm',
       description: 'Mái tóc sau khi uốn nhuộm có thể không đúng ý anh sau khi về nhà. Shine sẽ hỗ trợ anh chỉnh sửa hoàn toàn miễn phí trong vòng 7 ngày. Anh đặt lịch bình thường hoặc bảo lễ tân.',
     },
+    // {
+    //   title: 'Có chính sách giá đặc biệt nếu chờ lâu',
+    //   description: 'Shine cam kết phục vụ anh đúng giờ đặt lịch. Nếu anh phải chờ lâu hơn 20 phút so với giờ đặt lịch, Shine sẽ có chính sách giá đặc biệt dành riêng cho anh. Áp dụng: Khi anh đến đúng giờ đã đặt. Thời gian chờ được tính từ lúc checkin tới lúc bắt đầu gội. Trừ trường hợp salon xảy ra sự cố bất khả kháng như mất điện, nước.',
+    // },
 
   ];
 
@@ -108,13 +112,16 @@ const styles = StyleSheet.create({
     lineHeight: 20,
   },
   commitmentItem: {
-    padding: 5,
+    padding: 15,
     borderBottomWidth: 1,
     borderBottomColor: '#EEEEEE',
   },
   commitmentTitle: {
     fontSize: 16,
     fontWeight: 'bold',
+    marginBottom: 10,
+    paddingBottom: 10,
+    borderBottomWidth: 1,
   },
   commitmentDescription: {
     fontSize: 14,
@@ -125,5 +132,6 @@ const styles = StyleSheet.create({
     fontSize: 14,
     color: THEME_COLORS.primary,
     fontStyle: 'italic',
+    marginTop: 10,
   }
 }); 
