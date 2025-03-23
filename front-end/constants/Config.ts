@@ -1,4 +1,4 @@
-export const BACKEND_URL = 'http://10.33.66.97:9999';
+export const BACKEND_URL = 'http://localhost:9999';
 
 export const THEME_COLORS = {
   primary: '#2196F3',
@@ -14,4 +14,5 @@ export const THEME_COLORS = {
   gray: '#9E9E9E',
   grayLight: '#EEEEEE',
   grayDark: '#616161',
+  orangedark: '#FF5722',
 }; 
