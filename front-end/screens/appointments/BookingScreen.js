@@ -648,7 +648,7 @@ const styles = StyleSheet.create({
     backgroundColor: THEME_COLORS.primary,
     padding: 15,
     marginTop: 10,
-    marginBottom: 70,
+    marginBottom: 20,
     marginLeft: 30,
     marginRight: 30,
     borderRadius: 10,
