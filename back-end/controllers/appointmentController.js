@@ -147,7 +147,7 @@ exports.getAppointments = async (req, res) => {
     }
 
     const appointments = await Appointment.find(query)
-      .populate('userId', 'name email')
+      .populate('userId', 'name email phone')
       .populate('serviceId', 'service_name service_price')
       .populate({
         path: 'slotId',

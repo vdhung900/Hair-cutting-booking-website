@@ -20,6 +20,20 @@ export default function AppointmentsScreen({ navigation }) {
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
   const [error, setError] = useState('');
+  const [isAdmin, setIsAdmin] = useState(false);
+
+  useEffect(() => {
+    checkAdminRole();
+  }, []);
+
+  const checkAdminRole = async () => {
+    try {
+      const userRole = await AsyncStorage.getItem('userRole');
+      setIsAdmin(userRole === 'admin');
+    } catch (error) {
+      console.error('Lỗi khi kiểm tra vai trò:', error);
+    }
+  };
 
   const fetchAppointments = async () => {
     try {
@@ -126,7 +140,14 @@ export default function AppointmentsScreen({ navigation }) {
         onPress={() => navigation.navigate('AppointmentDetail', { appointment: item })}
       >
         <View style={styles.cardHeader}>
-          <Text style={styles.serviceName}>{item.service_name}</Text>
+          <View style={styles.headerLeft}>
+            <Text style={styles.serviceName}>{item.service_name}</Text>
+            {isAdmin && (
+              <Text style={styles.customerName}>
+                <FontAwesome5 name="user-alt" size={12} color={THEME_COLORS.primary} /> {item.userId?.name || 'Không có thông tin'}
+              </Text>
+            )}
+          </View>
           <View style={[styles.statusTag, { backgroundColor: getStatusColor(item.status) }]}>
             <Text style={styles.statusText}>{getStatusText(item.status)}</Text>
           </View>
@@ -145,7 +166,7 @@ export default function AppointmentsScreen({ navigation }) {
           </View>
 
           <View style={styles.infoItem}>
-            <FontAwesome5 name="user-alt" size={14} color={THEME_COLORS.primary} />
+            <FontAwesome5 name="cut" size={14} color={THEME_COLORS.primary} />
             <Text style={styles.infoText}>
               {item.slotId?.stylistId?.name || 'Chưa có stylist'}
             </Text>
@@ -321,7 +342,7 @@ const styles = StyleSheet.create({
     marginBottom: 10,
   },
   serviceName: {
-    fontSize: 18,
+    fontSize: 20,
     fontWeight: 'bold',
     color: THEME_COLORS.dark,
     flex: 1,
@@ -361,5 +382,10 @@ const styles = StyleSheet.create({
     textAlign: 'center',
     color: THEME_COLORS.error,
     margin: 20,
-  }
+  },
+  customerName: {
+    fontSize: 12,
+    color: THEME_COLORS.gray,
+    marginTop: 2,
+  },
 }); 

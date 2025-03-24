@@ -230,6 +230,20 @@ export default function AppointmentDetailScreen({ route, navigation }) {
         <View style={styles.card}>
           <Text style={styles.cardTitle}>Thông tin lịch hẹn</Text>
           
+          {isAdmin && (
+            <View style={styles.infoRow}>
+              <View style={styles.infoIconContainer}>
+                <FontAwesome5 name="user" size={16} color={THEME_COLORS.primary} />
+              </View>
+              <View style={styles.infoContent}>
+                <Text style={styles.infoLabel}>Khách hàng</Text>
+                <Text style={styles.infoText}>{appointment.userId?.name || 'Không có thông tin'}</Text>
+                <Text style={styles.infoSubText}>{appointment.userId?.email || ''}</Text>
+                <Text style={styles.infoSubText}>{appointment.userId?.phone || ''}</Text>
+              </View>
+            </View>
+          )}
+
           <View style={styles.infoRow}>
             <View style={styles.infoIconContainer}>
               <FontAwesome5 name="calendar-alt" size={16} color={THEME_COLORS.primary} />
@@ -424,6 +438,11 @@ const styles = StyleSheet.create({
   infoText: {
     fontSize: 16,
     color: THEME_COLORS.dark,
+  },
+  infoSubText: {
+    fontSize: 14,
+    color: THEME_COLORS.gray,
+    marginTop: 2,
   },
   buttonRow: {
     flexDirection: 'row',
