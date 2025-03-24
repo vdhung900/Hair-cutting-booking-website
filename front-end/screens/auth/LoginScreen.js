@@ -87,7 +87,7 @@ export default function LoginScreen({ navigation }) {
         <View style={styles.formContainer}>
           {error ? (
             <View style={styles.errorContainer}>
-              <FontAwesome5 name="exclamation-circle" size={20} color={THEME_COLORS.error} />
+              <FontAwesome5 name="exclamation-circle" size={20} color={THEME_COLORS.danger} />
               <Text style={styles.errorText}>{error}</Text>
             </View>
           ) : null}
@@ -163,12 +163,12 @@ const styles = StyleSheet.create({
   },
   topSection: {
     alignItems: 'center',
-    paddingTop: height * 0.04,
-    paddingBottom: height * 0.02,
+    paddingTop: height * 0.06,
+    paddingBottom: height * 0.04,
   },
   logo: {
-    width: width * 0.4,
-    height: width * 0.4,
+    width: width * 0.6,
+    height: width * 0.6,
     marginBottom: 20,
   },
   welcomeText: {
@@ -197,7 +197,7 @@ const styles = StyleSheet.create({
     marginBottom: 20,
   },
   errorText: {
-    color: THEME_COLORS.error,
+    color: THEME_COLORS.danger,
     marginLeft: 10,
     flex: 1,
   },
@@ -215,7 +215,7 @@ const styles = StyleSheet.create({
   },
   input: {
     flex: 1,
-    fontSize: 16,
+    fontSize: 20,
     color: THEME_COLORS.dark,
   },
   eyeIcon: {

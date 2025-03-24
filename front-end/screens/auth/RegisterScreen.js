@@ -115,6 +115,11 @@ export default function RegisterScreen({ navigation }) {
               />
             </View>
 
+            <View style={styles.titleContainer}>
+              <Text style={styles.title}>Đăng ký tài khoản</Text>
+              <Text style={styles.subtitle}>Đăng ký tài khoản để sử dụng dịch vụ của chúng tôi</Text>
+            </View>
+
             <View style={styles.formContainer}>
               <View style={styles.inputContainer}>
                 <FontAwesome5 name="user" size={20} color={THEME_COLORS.gray} style={styles.inputIcon} />
@@ -231,6 +236,23 @@ export default function RegisterScreen({ navigation }) {
 }
 
 const styles = StyleSheet.create({
+  titleContainer: {
+    alignItems: 'center',
+    marginBottom: 20,
+  },
+  title: {
+    fontSize: 24,
+    fontWeight: 'bold',
+    color: THEME_COLORS.dark,
+    marginBottom: 8,
+  },
+  subtitle: {
+    fontSize: 14,
+    color: THEME_COLORS.gray,
+    textAlign: 'center',
+    paddingHorizontal: 20,
+  },
+  
   container: {
     flex: 1,
     backgroundColor: THEME_COLORS.primary,
@@ -250,8 +272,8 @@ const styles = StyleSheet.create({
     paddingBottom: 0,
   },
   logo: {
-    width: width * 0.25,
-    height: width * 0.25,
+    width: width * 0.5,
+    height: width * 0.5,
     marginBottom: 15,
   },
   title: {
